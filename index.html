@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Refinance Savings Calculator | Stellar Mortgage</title>
+<meta name="description" content="See what refinancing your mortgage could save you each month, what it costs to close, and how many months until it pays for itself.">
+<meta property="og:title" content="Refinance Savings Calculator | Stellar Mortgage">
+<meta property="og:description" content="Find out in 30 seconds whether refinancing your mortgage is worth it.">
+<meta property="og:image" content="/assets/stellar-logo.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Stellar Mortgage brand: navy + cyan, Manrope / Public Sans / IBM Plex Mono, pill buttons */
+:root {
+  --bg: #F4FAFD; --sheet: #FFFFFF; --ink: #183850; --muted: #5A6F80; --line: #D7E8F2;
+  --band: #0F2637; --band-ink: #FFFFFF; --band-muted: #8AA0B0;
+  --cyan: #20B8F8; --accent: #20B8F8; --accent-ink: #0A5F7D; --accent-soft: #E8F4FB;
+  --btn: #183850; --btn-ink: #FFFFFF;
+  --gold: #C98A1B; --danger: #B4442C;
+  --f-display: "Manrope", -apple-system, system-ui, sans-serif;
+  --f-body: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #0A1A26; --sheet: #102536; --ink: #E8F4FB; --muted: #8AA0B0; --line: #22405A;
+  --band: #081521; --band-ink: #FFFFFF; --band-muted: #8AA0B0;
+  --accent: #20B8F8; --accent-ink: #6DD8F8; --accent-soft: #0F3247;
+  --btn: #20B8F8; --btn-ink: #0F2637;
+  --gold: #E5AE4A; --danger: #E57A60; color-scheme: dark } }
+
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html { -webkit-text-size-adjust: 100% }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--f-body) }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; line-height: 1.08; text-wrap: balance }
+p { margin: 0 }
+a { color: inherit }
+.gutter { padding-inline: 16px }
+.inner { max-width: 1080px; margin: 0 auto }
+
+/* masthead */
+.band { background: var(--band); color: var(--band-ink); padding-block: 28px 140px;
+  background-image: radial-gradient(900px 420px at 88% -10%, rgba(32,184,248,.22), transparent 60%), radial-gradient(600px 300px at 0% 110%, rgba(32,184,248,.08), transparent 70%) }
+.brandrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 52px }
+.brandrow img { height: 44px; width: auto; display: block }
+.brandrow .phone { font: 700 1rem var(--f-display); color: var(--band-ink); text-decoration: none; white-space: nowrap }
+.brandrow .phone:hover { color: var(--cyan) }
+.kicker { font: 600 .75rem/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--cyan) }
+.band h1 { font-size: clamp(2.2rem, 6.4vw, 4rem); font-weight: 800; letter-spacing: -.025em; max-width: 14ch; margin-top: 14px }
+.band .lede { color: var(--band-muted); font-size: 1.12rem; max-width: 52ch; margin-top: 18px }
+
+/* sheet */
+.sheet { background: var(--sheet); border-radius: 18px; margin-top: -100px; box-shadow: 0 30px 60px -30px rgba(15,38,55,.35), 0 0 0 1px var(--line);
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) }
+.inputs { padding: 32px; display: grid; gap: 22px; border-right: 1px solid var(--line); align-content: start }
+.inputs h2, .out h2 { font-size: .78rem; font-family: var(--f-body); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted) }
+.field { display: grid; gap: 8px }
+.field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px }
+.field label { font-weight: 600; font-size: .95rem }
+.field .hint { font-size: .82rem; color: var(--muted) }
+.numbox { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 0 10px; width: 132px; flex: none }
+.numbox span { color: var(--muted); font: 500 .9rem var(--f-mono) }
+.numbox input { border: 0; background: transparent; color: var(--ink); font: 600 1rem var(--f-mono); width: 100%; padding: 8px 4px; text-align: right; font-variant-numeric: tabular-nums }
+.numbox input:focus { outline: none }
+.numbox:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft) }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--accent) var(--p, 50%), var(--line) var(--p, 50%)); cursor: pointer }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--sheet); border: 3px solid var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,.2) }
+input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--sheet); border: 3px solid var(--accent) }
+input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px }
+.seg button { font: 600 .92rem var(--f-body); border: 0; border-radius: 999px; padding: 9px; background: transparent; color: var(--muted); cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--btn); color: var(--btn-ink); box-shadow: 0 1px 3px rgba(0,0,0,.12) }
+.seg button:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+/* results */
+.out { padding: 32px; display: grid; gap: 22px; align-content: start }
+.hero-num { display: grid; gap: 4px }
+.hero-num .lbl { color: var(--muted); font-weight: 500 }
+.hero-num .val { font: 800 clamp(2.8rem, 7vw, 4.2rem)/1 var(--f-display); letter-spacing: -.03em; color: var(--accent-ink); font-variant-numeric: tabular-nums }
+.hero-num .val small { font-size: .38em; color: var(--muted); font-weight: 500; letter-spacing: 0 }
+.verdict { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); font-weight: 600; font-size: .95rem }
+.verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none; margin-top: 6px }
+.verdict.warn { background: color-mix(in srgb, var(--gold) 14%, transparent) }
+.verdict.warn .dot { background: var(--gold) }
+.verdict.bad { background: color-mix(in srgb, var(--danger) 12%, transparent) }
+.verdict.bad .dot { background: var(--danger) }
+.rows { display: grid }
+.r { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line) }
+.r:last-child { border-bottom: 0 }
+.r span { color: var(--muted) }
+.r b { font: 600 1rem var(--f-mono); font-variant-numeric: tabular-nums; text-align: right }
+.r b em { font-style: normal; font-size: .75rem; color: var(--muted); margin-left: 6px }
+.chart { border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 6px }
+.chart-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin-bottom: 6px }
+.chart-head b { color: var(--ink) }
+.chart svg { width: 100%; height: auto; display: block }
+
+/* lead form */
+.cta { margin-top: 28px; background: var(--sheet); border-radius: 18px; box-shadow: 0 0 0 1px var(--line); padding: 32px;
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px; align-items: start }
+.cta h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); font-weight: 800; letter-spacing: -.02em }
+.cta p { color: var(--muted); margin-top: 12px; max-width: 46ch }
+.ticks { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 8px }
+.ticks li { display: flex; gap: 10px; align-items: center; font-weight: 500 }
+.ticks li::before { content: ""; width: 18px; height: 18px; border-radius: 50%; flex: none;
+  background: var(--accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%2320B8F8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat }
+.alt { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px }
+form.lead { display: grid; gap: 14px }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+.lead label { display: grid; gap: 6px; font-weight: 600; font-size: .9rem }
+.lead input[type=text], .lead input[type=email], .lead input[type=tel] { font: 500 1rem var(--f-body); padding: 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); width: 100% }
+.lead input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft) }
+.consent { display: flex !important; grid-template-columns: none; gap: 10px; align-items: flex-start; font-weight: 400 !important; font-size: .78rem !important; line-height: 1.5; color: var(--muted) }
+.consent input { margin-top: 3px; accent-color: var(--accent-ink); flex: none }
+.btn { font: 700 1.02rem var(--f-display); padding: 15px 26px; border: 0; border-radius: 999px; background: var(--btn); color: var(--btn-ink); cursor: pointer; transition: transform .15s, filter .15s; text-decoration: none; display: inline-flex; justify-content: center; align-items: center }
+.btn:hover { filter: brightness(1.12); transform: translateY(-1px) }
+.btn:disabled { opacity: .6; cursor: wait }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); padding: 11px 20px; font-size: .92rem }
+.btn.cyan { background: var(--cyan); color: #0F2637; padding: 11px 20px; font-size: .92rem }
+.form-msg { font-weight: 600; font-size: .95rem }
+.form-msg.err { color: var(--danger) }
+.hp { position: absolute; left: -9999px }
+
+footer { padding-block: 32px 48px; color: var(--muted); font-size: .8rem; display: grid; gap: 10px }
+footer p { max-width: 90ch }
+footer strong { color: var(--ink) }
+
+@media (max-width: 860px) {
+  .sheet, .cta { grid-template-columns: 1fr }
+  .inputs { border-right: 0; border-bottom: 1px solid var(--line) }
+}
+@media (max-width: 480px) {
+  .inputs, .out, .cta { padding: 22px 18px }
+  .pair, .f2 { grid-template-columns: 1fr }
+  .band { padding-block: 22px 120px }
+  .brandrow { margin-bottom: 36px }
+  .brandrow img { height: 34px }
+  .brandrow .phone { font-size: .88rem }
+  .numbox { width: 120px }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style>
+</head>
+<body>
+
+<div class="band gutter">
+  <div class="inner">
+    <div class="brandrow">
+      <a href="https://www.stellarmortgagecorp.com/" aria-label="Stellar Mortgage home"><img src="/assets/stellar-logo-horizontal-dark.png" alt="Stellar Mortgage Corporation" width="626" height="176"></a>
+      <a class="phone" href="tel:18775453811">(877) 545-3811</a>
+    </div>
+    <div class="kicker">Free refinance calculator</div>
+    <h1>Is refinancing worth it for you?</h1>
+    <p class="lede">See your new monthly payment, what it costs to close, and how many months until refinancing pays for itself. It takes about 30 seconds.</p>
+  </div>
+</div>
+
+<main class="gutter">
+  <div class="inner">
+    <section class="sheet" aria-label="Calculator">
+      <div class="inputs">
+        <h2>Your mortgage</h2>
+
+        <div class="field">
+          <div class="field-top"><label for="bal">Loan balance</label>
+            <div class="numbox"><span>$</span><input id="bal" inputmode="numeric" value="350,000" aria-label="Loan balance in dollars"></div></div>
+          <input type="range" id="bal-r" min="50000" max="1500000" step="5000" value="350000" aria-label="Loan balance slider">
+        </div>
+
+        <div class="pair">
+          <div class="field">
+            <div class="field-top"><label for="cur">Current rate</label>
+              <div class="numbox"><input id="cur" inputmode="decimal" value="7.25" aria-label="Current rate percent"><span>%</span></div></div>
+            <input type="range" id="cur-r" min="2" max="10" step="0.125" value="7.25" aria-label="Current rate slider">
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="new">New rate</label>
+              <div class="numbox"><input id="new" inputmode="decimal" value="6.125" aria-label="New rate percent"><span>%</span></div></div>
+            <input type="range" id="new-r" min="2" max="10" step="0.125" value="6.125" aria-label="New rate slider">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="yrs">Years left on current loan</label>
+            <div class="numbox"><input id="yrs" inputmode="numeric" value="27" aria-label="Years left"><span>yrs</span></div></div>
+          <input type="range" id="yrs-r" min="1" max="30" step="1" value="27" aria-label="Years left slider">
+        </div>
+
+        <div class="field">
+          <label id="term-l">New loan term</label>
+          <div class="seg" role="group" aria-labelledby="term-l">
+            <button type="button" data-term="30" aria-pressed="true">30-year</button>
+            <button type="button" data-term="20" aria-pressed="false">20-year</button>
+            <button type="button" data-term="15" aria-pressed="false">15-year</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><div><label for="fees">Closing costs</label><p class="hint">Often 2% to 5% of the loan. Includes appraisal, title and lender fees.</p></div>
+            <div class="numbox"><span>$</span><input id="fees" inputmode="numeric" value="7,000" aria-label="Closing costs in dollars"></div></div>
+        </div>
+      </div>
+
+      <div class="out" aria-live="polite">
+        <h2>Your result</h2>
+        <div class="hero-num">
+          <span class="lbl">You could save</span>
+          <span class="val" id="o-save">$0<small> /month</small></span>
+        </div>
+        <div class="verdict" id="o-verdict"><span class="dot"></span><span id="o-verdict-t"></span></div>
+        <div class="rows">
+          <div class="r"><span>Current payment</span><b id="o-old">–</b></div>
+          <div class="r"><span>New payment</span><b id="o-new">–</b></div>
+          <div class="r"><span>Closing costs</span><b id="o-cost">–</b></div>
+          <div class="r"><span>Net savings over 5 years</span><b id="o-5y">–</b></div>
+          <div class="r"><span>Lifetime interest</span><b id="o-int">–</b></div>
+        </div>
+        <div class="chart">
+          <div class="chart-head"><span>Savings minus closing costs, over 5 years</span><span>Break-even: <b id="o-be">–</b></span></div>
+          <svg id="chart" viewBox="0 0 400 170" role="img" aria-label="Chart of cumulative net savings over 60 months"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="get-numbers">
+      <div>
+        <h2>Get your exact numbers</h2>
+        <p>This calculator gives an estimate. A licensed Stellar loan officer can price your real rate and closing costs, check whether a streamline or cash-out option fits, and tell you if refinancing makes sense. No cost and no obligation.</p>
+        <ul class="ticks">
+          <li>Your actual rate and closing costs</li>
+          <li>Loan options across 19 licensed states</li>
+          <li>A straight answer, even if it's "wait"</li>
+        </ul>
+        <div class="alt">
+          <a class="btn cyan" href="https://apply.stellarmortgagecorp.com" rel="noopener noreferrer">Apply now</a>
+          <a class="btn ghost" href="tel:18775453811">Call (877) 545-3811</a>
+        </div>
+      </div>
+      <div id="form-wrap">
+        <!-- Posts to Stellar's existing Salesforce Web-to-Lead, same as the forms on stellarmortgagecorp.com -->
+        <form class="lead" id="lead-form" method="POST" action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8">
+          <input type="hidden" name="oid" value="00DDn000009Q2L7">
+          <input type="hidden" name="retURL" value="https://www.stellarmortgagecorp.com/thank-you/?src=refi-calculator">
+          <input type="hidden" name="lead_source" value="Website - Refi Calculator">
+          <input type="hidden" name="company" value="Consumer">
+          <input type="hidden" name="description" id="f-summary">
+          <p class="hp"><label>Leave this empty <input name="_gotcha" id="f-hp" tabindex="-1" autocomplete="off"></label></p>
+          <div class="f2">
+            <label for="f-first">First name<input type="text" id="f-first" name="first_name" autocomplete="given-name" required></label>
+            <label for="f-last">Last name<input type="text" id="f-last" name="last_name" autocomplete="family-name" required></label>
+          </div>
+          <div class="f2">
+            <label for="f-phone">Phone<input type="tel" id="f-phone" name="phone" autocomplete="tel" inputmode="tel" required></label>
+            <label for="f-zip">Property ZIP<input type="text" id="f-zip" name="zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" required></label>
+          </div>
+          <label for="f-email">Email<input type="email" id="f-email" name="email" autocomplete="email" required></label>
+          <label class="consent" for="f-consent"><input type="checkbox" id="f-consent" name="consent" value="Yes" required>
+            <span>I agree to the <a href="https://www.stellarmortgagecorp.com/legal/">Terms of Use</a> and <a href="https://www.stellarmortgagecorp.com/privacy/">Privacy Policy</a>, and I agree that Stellar Mortgage Corporation may contact me by phone, text message, or email about my inquiry, including with automated technology. Consent is not a condition of any loan. Message and data rates may apply. Reply STOP to opt out.</span></label>
+          <button class="btn" type="submit" id="f-btn">Get my exact numbers</button>
+          <p class="form-msg" id="f-msg" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <p>These figures are estimates only and are not a loan offer or commitment to lend. Payments shown are principal and interest only and do not include taxes, insurance or mortgage insurance. Rates, closing costs and eligibility depend on credit, property, occupancy and loan program. Choosing a longer new term can lower your payment while increasing the total interest you pay.</p>
+      <p><strong>Stellar Mortgage Corporation</strong> · NMLS 2190975 · Licensed in NJ, PA, DE, MD, MA, VA, NC, SC, GA, FL, TN, TX, IL, OH, CA, CO, MN, NH, WA · Equal Housing Lender · <a href="https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/2190975">NMLS Consumer Access</a></p>
+    </footer>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const parse = v => parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0;
+const money = n => (n < 0 ? '−$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-US');
+let term = 30;
+
+// keep slider and number box in sync
+const links = [['bal', true], ['cur'], ['new'], ['yrs']];
+function paint(r) { const p = (r.value - r.min) / (r.max - r.min) * 100; r.style.setProperty('--p', p + '%'); }
+links.forEach(([id, comma]) => {
+  const box = $(id), r = $(id + '-r');
+  r.addEventListener('input', () => { box.value = comma ? (+r.value).toLocaleString('en-US') : r.value; paint(r); calc(); });
+  box.addEventListener('input', () => { r.value = parse(box.value); paint(r); calc(); });
+  box.addEventListener('blur', () => { if (comma) box.value = parse(box.value).toLocaleString('en-US'); });
+  paint(r);
+});
+$('fees').addEventListener('input', calc);
+$('fees').addEventListener('blur', () => { $('fees').value = parse($('fees').value).toLocaleString('en-US'); });
+document.querySelectorAll('[data-term]').forEach(b => b.onclick = () => {
+  term = +b.dataset.term;
+  document.querySelectorAll('[data-term]').forEach(o => o.setAttribute('aria-pressed', o === b));
+  calc();
+});
+
+// US fixed-rate mortgage: monthly compounding
+function payment(P, pct, years) {
+  const n = Math.round(years * 12); if (P <= 0 || n <= 0) return 0;
+  const i = pct / 100 / 12;
+  return i === 0 ? P / n : P * i / (1 - Math.pow(1 + i, -n));
+}
+
+function calc() {
+  const bal = parse($('bal').value), cur = parse($('cur').value), nw = parse($('new').value);
+  const yrs = parse($('yrs').value), fees = parse($('fees').value);
+
+  const oldP = payment(bal, cur, yrs), newP = payment(bal, nw, term);
+  const save = oldP - newP;
+  const be = save > 0 ? Math.ceil(fees / save) : Infinity;
+  const net5 = save * 60 - fees;
+  const intOld = oldP * yrs * 12 - bal, intNew = newP * term * 12 - bal;
+  const intDiff = intNew - intOld;
+
+  $('o-save').innerHTML = money(Math.max(0, save)) + '<small> /month</small>';
+  $('o-old').textContent = money(oldP);
+  $('o-new').textContent = money(newP);
+  $('o-cost').textContent = money(fees);
+  $('o-5y').textContent = money(net5);
+  $('o-int').innerHTML = money(Math.abs(intDiff)) + '<em>' + (intDiff <= 0 ? 'less' : 'more') + '</em>';
+  $('o-be').textContent = isFinite(be) ? (be <= 60 ? be + ' months' : 'over 5 years') : 'never';
+
+  const v = $('o-verdict'), t = $('o-verdict-t');
+  if (!isFinite(be)) {
+    v.className = 'verdict bad';
+    t.textContent = term < yrs
+      ? "Your payment would go up on a shorter term, but you'd pay off the loan sooner. A loan officer can show you the trade-off."
+      : "At these rates your payment wouldn't go down. A loan officer can check whether other options, like cash-out or dropping mortgage insurance, make sense.";
+  }
+  else if (be <= 24) { v.className = 'verdict'; t.textContent = 'Refinancing pays for itself in ' + be + ' months. This looks worth exploring.'; }
+  else if (be <= 60) { v.className = 'verdict warn'; t.textContent = 'It takes ' + be + ' months to break even. It could still make sense, especially if you plan to stay put.'; }
+  else { v.className = 'verdict warn'; t.textContent = 'Break-even is more than 5 years away. It may be better to wait for lower rates.'; }
+
+  $('f-summary').value = `Refi calculator: balance ${money(bal)} | ${cur}% (${yrs} yrs left) -> ${nw}% ${term}-yr | closing costs ${money(fees)} | saves ${money(save)}/mo | break-even ${isFinite(be) ? be + ' mo' : 'never'} | 5-yr net ${money(net5)}`;
+  drawChart(save, fees, be);
+}
+
+function drawChart(save, cost, be) {
+  const W = 400, H = 170, L = 52, R = 10, T = 12, B = 26;
+  const vals = Array.from({ length: 61 }, (_, m) => save * m - cost);
+  let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+  if (hi - lo < 1) hi = lo + 1;
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const x = m => L + m / 60 * (W - L - R);
+  const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const step = niceStep((hi - lo) / 4);
+  let g = '';
+  for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) {
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${L - 8}" y="${y(t) + 4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${short(t)}</text>`;
+  }
+  [0, 12, 24, 36, 48, 60].forEach(m => g += `<text x="${x(m)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${m === 0 ? 'Now' : 'Yr ' + m / 12}</text>`);
+  const pts = vals.map((v, m) => `${x(m).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const area = `${x(0)},${y(0)} ${pts} ${x(60)},${y(0)}`;
+  g += `<defs><clipPath id="above"><rect x="0" y="0" width="${W}" height="${y(0)}"/></clipPath><clipPath id="below"><rect x="0" y="${y(0)}" width="${W}" height="${H}"/></clipPath></defs>`;
+  g += `<polygon points="${area}" fill="var(--accent)" opacity=".18" clip-path="url(#above)"/>`;
+  g += `<polygon points="${area}" fill="var(--danger)" opacity=".12" clip-path="url(#below)"/>`;
+  g += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>`;
+  g += `<polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  if (isFinite(be) && be <= 60) {
+    g += `<line x1="${x(be)}" x2="${x(be)}" y1="${T}" y2="${H - B}" stroke="var(--gold)" stroke-width="1.5"/>`;
+    g += `<circle cx="${x(be)}" cy="${y(0)}" r="5" fill="var(--gold)" stroke="var(--sheet)" stroke-width="2"/>`;
+  }
+  g += `<circle cx="${x(60)}" cy="${y(vals[60])}" r="4.5" fill="var(--accent)" stroke="var(--sheet)" stroke-width="2"/>`;
+  $('chart').innerHTML = g;
+}
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))); const n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+function short(v) { const a = Math.abs(v); const s = a >= 1000 ? '$' + Math.round(a / 1000) + 'k' : '$' + Math.round(a); return v < 0 ? '−' + s : s; }
+
+// lead form posts natively to Salesforce, which redirects to Stellar's thank-you page
+$('lead-form').addEventListener('submit', e => {
+  if ($('f-hp').value) { e.preventDefault(); return; } // bot filled the honeypot
+  calc();
+  $('f-btn').disabled = true; $('f-msg').textContent = 'Sending…';
+});
+window.addEventListener('pageshow', () => { $('f-btn').disabled = false; $('f-msg').textContent = ''; });
+
+calc();
+</script>
+</body>
+</html>
