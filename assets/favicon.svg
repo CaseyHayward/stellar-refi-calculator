@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="16" fill="#ffffff"/>
+  <g>
+    <circle cx="74.50" cy="50.00" r="4.3" fill="#6DD8F8"/>
+    <circle cx="62.25" cy="71.22" r="4.3" fill="#6DD8F8"/>
+    <circle cx="37.75" cy="71.22" r="4.3" fill="#6DD8F8"/>
+    <circle cx="25.50" cy="50.00" r="4.3" fill="#6DD8F8"/>
+    <circle cx="37.75" cy="28.78" r="4.3" fill="#6DD8F8"/>
+    <circle cx="62.25" cy="28.78" r="4.3" fill="#6DD8F8"/>
+    <circle cx="89.31" cy="61.64" r="2.9" fill="#6DD8F8"/>
+    <circle cx="74.96" cy="82.53" r="2.9" fill="#6DD8F8"/>
+    <circle cx="51.07" cy="90.99" r="2.9" fill="#6DD8F8"/>
+    <circle cx="26.78" cy="83.79" r="2.9" fill="#6DD8F8"/>
+    <circle cx="11.35" cy="63.69" r="2.9" fill="#6DD8F8"/>
+    <circle cx="10.69" cy="38.36" r="2.9" fill="#6DD8F8"/>
+    <circle cx="25.04" cy="17.47" r="2.9" fill="#6DD8F8"/>
+    <circle cx="48.93" cy="9.01" r="2.9" fill="#6DD8F8"/>
+    <circle cx="73.22" cy="16.21" r="2.9" fill="#6DD8F8"/>
+    <circle cx="88.65" cy="36.31" r="2.9" fill="#6DD8F8"/>
+  </g>
+  <path d="M50 32 Q51.6 48.4 68 50 Q51.6 51.6 50 68 Q48.4 51.6 32 50 Q48.4 48.4 50 32 Z" fill="#1f2937"/>
+</svg>
