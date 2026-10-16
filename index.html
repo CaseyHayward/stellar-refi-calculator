@@ -371,11 +371,29 @@ function drawChart(save, cost, be) {
 function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))); const n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
 function short(v) { const a = Math.abs(v); const s = a >= 1000 ? '$' + Math.round(a / 1000) + 'k' : '$' + Math.round(a); return v < 0 ? '−' + s : s; }
 
-// lead form posts natively to Salesforce, which redirects to Stellar's thank-you page
-$('lead-form').addEventListener('submit', e => {
-  if ($('f-hp').value) { e.preventDefault(); return; } // bot filled the honeypot
+// lead form: email the lead to Max via FormSubmit, then post natively to Salesforce, which redirects to Stellar's thank-you page
+const LEAD_EMAIL = 'max.umansky@stellarmortgagecorp.com';
+$('lead-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if ($('f-hp').value) return; // bot filled the honeypot
   calc();
+  const form = e.target;
   $('f-btn').disabled = true; $('f-msg').textContent = 'Sending…';
+  const f = new FormData(form);
+  try {
+    await fetch('https://formsubmit.co/ajax/' + LEAD_EMAIL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        _subject: 'New refinance calculator lead: ' + f.get('first_name') + ' ' + f.get('last_name'),
+        _template: 'table',
+        Name: f.get('first_name') + ' ' + f.get('last_name'),
+        Phone: f.get('phone'), Email: f.get('email'), ZIP: f.get('zip'),
+        'Calculator results': f.get('description'),
+        Consent: f.get('consent') ? 'Yes' : 'No',
+      }),
+    });
+  } catch (err) { /* still send to Salesforce below */ }
+  form.submit();
 });
 window.addEventListener('pageshow', () => { $('f-btn').disabled = false; $('f-msg').textContent = ''; });
 
